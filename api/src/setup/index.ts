@@ -7,10 +7,11 @@ import { SsiService } from '../services/ssi-service';
 import { VerificationService } from '../services/verification-service';
 import { addTrustedRootId } from '../database/trusted-roots';
 import { createNonce, getHexEncodedKey, signNonce, verifySignedNonce } from '../utils/encryption';
-import { UserType } from '../models/types/user';
+import { IdentityClaim, UserType } from '../models/types/user';
 import { CreateIdentityBody } from '../models/types/identity';
 import * as VerifiableCredentialsDb from '../database/verifiable-credentials';
 import { KEY_COLLECTION_SIZE } from '../config/identity';
+import { CredentialTypes, Subject } from '../models/types/verification';
 
 const dbUrl = CONFIG.databaseUrl;
 const dbName = CONFIG.databaseName;
@@ -43,7 +44,10 @@ export async function setupApi() {
 		const serverData: CreateIdentityBody = {
 			storeIdentity: true,
 			username: 'root-identity',
-			type: UserType.Service
+			claim: {
+				type: UserType.Service,
+				name: 'Identity Service'
+			} as IdentityClaim
 		};
 
 		const identity = await userService.createIdentity(serverData);
@@ -76,7 +80,12 @@ export async function setupApi() {
 		}
 
 		console.log('Set server identity as verified...');
-		await verificationService.verifyIdentity(serverUser, serverUser.identityId, serverUser.identityId);
+		const subject: Subject = {
+			claim: serverUser.claim,
+			credentialType: CredentialTypes.VerifiedIdentityCredential,
+			identityId: serverUser.identityId
+		};
+		await verificationService.verifyIdentity(subject, serverUser.identityId, serverUser.identityId);
 		console.log(`Setup Done!\nPlease store the generated server identity as environment variable.\nLike: SERVER_IDENTITY=${serverUser.identityId}`);
 		process.exit(0);
 	} else {

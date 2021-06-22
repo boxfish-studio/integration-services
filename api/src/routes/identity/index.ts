@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { User, UserSearch, UserType } from '../../models/types/user';
+import { UserSearch, UserType } from '../../models/types/user';
 import { UserService } from '../../services/user-service';
 import * as _ from 'lodash';
 import { StatusCodes } from 'http-status-codes';
@@ -7,14 +7,10 @@ import { getDateFromString } from '../../utils/date';
 import { AuthenticatedRequest } from '../../models/types/verification';
 import { AuthorizationService } from '../../services/authorization-service';
 import { CreateIdentityBody } from '../../models/types/identity';
+import { UserSchemaBody } from '../../models/types/request-bodies';
 
 export class IdentityRoutes {
-	private readonly userService: UserService;
-	private readonly authorizationService: AuthorizationService;
-	constructor(userService: UserService, authorizationService: AuthorizationService) {
-		this.userService = userService;
-		this.authorizationService = authorizationService;
-	}
+	constructor(private readonly userService: UserService, private readonly authorizationService: AuthorizationService) {}
 
 	createIdentity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
@@ -55,7 +51,7 @@ export class IdentityRoutes {
 
 	addUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			const user: User = req.body;
+			const user = req.body as UserSchemaBody;
 			const result = await this.userService.addUser(user);
 
 			if (!result?.result?.n) {
@@ -71,7 +67,7 @@ export class IdentityRoutes {
 
 	updateUser = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			const user: User = req.body;
+			const user = req.body;
 
 			const { isAuthorized, error } = await this.authorizationService.isAuthorized(req.user, user.identityId);
 			if (!isAuthorized) {
@@ -114,11 +110,8 @@ export class IdentityRoutes {
 	getUserSearch = (req: Request): UserSearch => {
 		const decodeParam = (param: string): string | undefined => (param ? decodeURI(param) : undefined);
 		const type = decodeParam(<string>req.query.type);
-		const organization = decodeParam(<string>req.query.organization);
 		const username = decodeParam(<string>req.query.username);
-		const verifiedParam = decodeParam(<string>req.query.verified);
 		const registrationDate = decodeParam(<string>req.query['registration-date']);
-		const verified = verifiedParam != null ? Boolean(verifiedParam) && verifiedParam == 'true' : undefined;
 		const limitParam = parseInt(<string>req.query.limit, 10);
 		const indexParam = parseInt(<string>req.query.index, 10);
 		const limit = isNaN(limitParam) || limitParam == 0 ? undefined : limitParam;
@@ -128,8 +121,6 @@ export class IdentityRoutes {
 			type: <UserType>type,
 			index,
 			limit,
-			organization,
-			verified,
 			username,
 			registrationDate: getDateFromString(registrationDate)
 		};

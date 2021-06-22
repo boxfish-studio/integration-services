@@ -8,9 +8,8 @@ export const TestUsersMock = [
 		publicKey: 'HmvXxyyzaA9B5CMp63xG9ptEkgwmHgaYVStdDsYxzDTX',
 		username: 'test-device',
 		type: 'Device',
-		organization: 'IOTA',
 		registrationDate: '2021-03-15T10:29:56+01:00',
-		data: {
+		claim: {
 			id: 'test-device',
 			type: 'Device',
 			category: ['sensor'],
@@ -32,10 +31,9 @@ export const TestUsersMock = [
 	{
 		identityId: 'did:iota:6cTkp3gCV3yifiGDHUK4x1omXb6yFBTRg7NS2x3kBDUm',
 		username: 'second-user',
-		organization: 'University Account',
 		type: 'Person',
 		registrationDate: '2021-03-15T10:29:56+01:00',
-		data: {
+		claim: {
 			familyName: 'Tomson',
 			givenName: 'Brandon'
 		}
@@ -45,10 +43,9 @@ export const TestUsersMock = [
 		username: 'another-iota-user',
 		firstName: 'Jon',
 		lastName: 'Keen',
-		organization: 'IOTA',
 		type: 'Person',
 		registrationDate: '2021-03-15T10:29:56+01:00',
-		data: {
+		claim: {
 			familyName: 'Keen',
 			givenName: 'Jon'
 		}
@@ -80,16 +77,8 @@ export const UserIdentityMock: IdentityJsonUpdate & { userData: User } = {
 		identityId: 'did:iota:Ced3EL4XN7mLy5ACPdrNsR8HZib2MXKUQuAMQYEMbcb4',
 		publicKey: '8WaGsr277JQaqV9fxHmFNGC9haApFbBfdnytmq5gq4vm',
 		username: 'first-user',
-		type: 'Person',
-		data: { firstName: 'Tom', lastName: 'Sonson' },
+		claim: { type: 'Person', firstName: 'Tom', lastName: 'Sonson' },
 		registrationDate: '2021-03-16T15:18:49+01:00',
-		verification: {
-			verified: true,
-			verificationDate: '2021-03-24T16:59:12+01:00',
-			lastTimeChecked: '2021-03-24T16:59:12+01:00',
-			verificationIssuerId: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ'
-		},
-		organization: 'IOTA',
 		verifiableCredentials: [
 			{
 				'@context': 'https://www.w3.org/2018/credentials/v1',
@@ -98,7 +87,6 @@ export const UserIdentityMock: IdentityJsonUpdate & { userData: User } = {
 				credentialSubject: {
 					id: 'did:iota:Ced3EL4XN7mLy5ACPdrNsR8HZib2MXKUQuAMQYEMbcb4',
 					type: UserType.Person,
-					organization: 'IOTA',
 					registrationDate: '2021-03-16T15:18:49+01:00',
 					username: 'first-user',
 					initiatorId: ''
@@ -156,24 +144,35 @@ export const ServerIdentityMock: IdentityJsonUpdate & { userData: User } = {
 		identityId: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ',
 		publicKey: '5r7cbQkEXi2srrNUrVDkB79NnPuiBguWsPDvS6nY7yEb',
 		username: 'api-identity',
-		type: 'Api',
 		registrationDate: '2021-03-24T15:38:43+01:00',
-		verification: {
-			verified: true,
-			verificationDate: '2021-03-24T15:38:46+01:00',
-			lastTimeChecked: '2021-03-24T16:20:32+01:00',
-			verificationIssuerId: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ'
-		},
-		organization: 'IOTA',
 		verifiableCredentials: [
 			{
 				'@context': 'https://www.w3.org/2018/credentials/v1',
 				id: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ',
-				type: ['VerifiableCredential', 'ApiCredential'],
+				type: ['VerifiableCredential', 'VerifiedIdentityCredential'],
 				credentialSubject: {
 					id: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ',
-					type: 'Api',
-					organization: 'IOTA',
+					type: 'Person',
+					registrationDate: '2021-03-24T15:38:43+01:00',
+					username: 'api-identity',
+					initiatorId: ''
+				},
+				issuer: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ',
+				issuanceDate: '2021-03-24T14:38:45Z',
+				proof: {
+					type: 'MerkleKeySignature2021',
+					verificationMethod: '#key-collection',
+					signatureValue:
+						'8rVDt6KCPoZVhMCGG5AQLZaUjFJ5LLv4iXsaoQjeqQpq.1117uJFpmAB6msQ9GdsSRvxfdSvfTas94EippDqh6foKFTY1diqiCzfAuqYVExhxeJGBYycQiDbxwGev9Chrtz51UYVbwUL1DR8gipj3zuZa4X2SF7UnTbAw74Dv3o2qsqi2FsxtssV.52yNV25JkS9sRw2tSCKw4yQ3hY4fEneEpk82vU9UX2G5vGJsPhvpjSwfX2cxvqJ48E8EvwDCXrFuetyLPLVQ1UGY'
+				}
+			},
+			{
+				'@context': 'https://www.w3.org/2018/credentials/v1',
+				id: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ',
+				type: ['VerifiableCredential', 'SomeBasicCredential'], // not valid credential to verify others
+				credentialSubject: {
+					id: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ',
+					type: 'Person',
 					registrationDate: '2021-03-24T15:38:43+01:00',
 					username: 'api-identity',
 					initiatorId: ''
@@ -222,15 +221,7 @@ export const DeviceIdentityMock: IdentityJsonUpdate & { userData: User } = {
 		identityId: 'did:iota:6hyaHgrvEeXD8z6qqd1QyYNQ1QD54fXfLs6uGew3DeNu',
 		publicKey: 'DDBJgEUNmWisGf4Zh6MazAtef7V5BjVJdEYKo2yRLYVp',
 		username: 'test-device',
-		type: 'Device',
 		registrationDate: '2021-03-24T16:54:38+01:00',
-		verification: {
-			verified: true,
-			verificationDate: '2021-03-24T16:59:00+01:00',
-			lastTimeChecked: '2021-03-24T16:59:00+01:00',
-			verificationIssuerId: 'did:iota:5Esfk9YHpqZAGFBCh4EzbnVH2kQhirmxQApc1ghCncGQ'
-		},
-		organization: 'IOTA',
 		verifiableCredentials: [
 			{
 				'@context': 'https://www.w3.org/2018/credentials/v1',
@@ -239,7 +230,6 @@ export const DeviceIdentityMock: IdentityJsonUpdate & { userData: User } = {
 				credentialSubject: {
 					id: 'did:iota:6hyaHgrvEeXD8z6qqd1QyYNQ1QD54fXfLs6uGew3DeNu',
 					type: 'Device',
-					organization: 'IOTA',
 					registrationDate: '2021-03-24T16:54:38+01:00',
 					username: 'test-device',
 					initiatorId: ''

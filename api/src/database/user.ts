@@ -1,6 +1,6 @@
 import { CollectionNames } from './constants';
 import { MongoDbService } from '../services/mongodb-service';
-import { UserPersistence, UserRoles, UserSearch, VerificationPersistence, VerificationUpdatePersistence } from '../models/types/user';
+import { UserPersistence, UserRoles, UserSearch } from '../models/types/user';
 import { DeleteWriteOpResultObject, InsertOneWriteOpResult, UpdateWriteOpResult, WithId } from 'mongodb';
 import { VerifiableCredentialJson } from '../models/types/identity';
 import { MAX_NUMBER_OF_VC } from '../config/identity';
@@ -10,14 +10,12 @@ const maxNumberOfVc = MAX_NUMBER_OF_VC;
 
 export const searchUsers = async (userSearch: UserSearch): Promise<UserPersistence[]> => {
 	const regex = (text: string) => text && new RegExp(text, 'i');
-	const { type, organization, username, verified, index, registrationDate } = userSearch;
+	const { type, username, index, registrationDate } = userSearch;
 	const limit = userSearch.limit != null ? userSearch.limit : 100;
 	const query = {
 		registrationDate: registrationDate && { $gte: registrationDate },
-		type: regex(type),
-		organization: regex(organization),
-		username: regex(username),
-		'verification.verified': verified
+		'claim.type': regex(type),
+		username: regex(username)
 	};
 
 	const plainQuery = MongoDbService.getPlainObject(query);
@@ -43,8 +41,6 @@ export const getUserByUsername = async (username: string): Promise<UserPersisten
 };
 
 export const addUser = async (user: UserPersistence): Promise<InsertOneWriteOpResult<WithId<unknown>>> => {
-	delete user.verification;
-
 	if (user.verifiableCredentials?.length >= maxNumberOfVc) {
 		throw new Error(`You can't add more than ${maxNumberOfVc} verifiable credentials to a user!`);
 	}
@@ -64,7 +60,7 @@ export const updateUser = async (user: UserPersistence): Promise<UpdateWriteOpRe
 		_id: user.identityId
 	};
 
-	const { username, organization, type, data, verifiableCredentials } = user;
+	const { username, claim, verifiableCredentials } = user;
 
 	if (verifiableCredentials?.some((vc) => vc?.id !== user.identityId)) {
 		throw new Error('the passed verifiable credentials does not concur with the user!');
@@ -76,9 +72,7 @@ export const updateUser = async (user: UserPersistence): Promise<UpdateWriteOpRe
 
 	const updateObject = MongoDbService.getPlainObject({
 		username: username || undefined, // username must not be ''
-		type: type || undefined, // type must not be ''
-		organization,
-		data,
+		claim,
 		verifiableCredentials
 	});
 
@@ -89,36 +83,11 @@ export const updateUser = async (user: UserPersistence): Promise<UpdateWriteOpRe
 	return MongoDbService.updateDocument(collectionName, query, update);
 };
 
-export const updateUserVerification = async (vup: VerificationUpdatePersistence): Promise<void> => {
-	const query = {
-		_id: vup.identityId
-	};
-	const verification: VerificationPersistence = {
-		verified: vup.verified,
-		verificationDate: vup.verificationDate,
-		lastTimeChecked: vup.lastTimeChecked,
-		verificationIssuerId: vup.verificationIssuerId
-	};
-
-	const updateObject = MongoDbService.getPlainObject({
-		verification: MongoDbService.getPlainObject(verification)
-	});
-
-	const update = {
-		$set: { ...updateObject }
-	};
-
-	const res = await MongoDbService.updateDocument(collectionName, query, update);
-	if (!res?.result?.n) {
-		throw new Error('could not update user verification!');
-	}
-};
-
 export const addUserVC = async (vc: VerifiableCredentialJson): Promise<void> => {
 	const currentUser = await getUser(vc.id);
-	const currentVCs = currentUser.verifiableCredentials || [];
+	const currentVCs = currentUser?.verifiableCredentials || [];
 
-	if (currentUser.verifiableCredentials?.length >= maxNumberOfVc) {
+	if (currentUser?.verifiableCredentials?.length >= maxNumberOfVc) {
 		throw new Error(`You can't add more than ${maxNumberOfVc} verifiable credentials to a user!`);
 	}
 
@@ -134,7 +103,7 @@ export const addUserVC = async (vc: VerifiableCredentialJson): Promise<void> => 
 		$set: { ...updateObject }
 	};
 
-	const res = await MongoDbService.updateDocument(collectionName, query, update);
+	const res = await MongoDbService.updateDocument(collectionName, query, update, { upsert: true });
 	if (!res?.result?.n) {
 		throw new Error('could not update user verifiable credential!');
 	}

@@ -1,12 +1,4 @@
-import {
-	User,
-	UserPersistence,
-	UserRoles,
-	UserSearch,
-	Verification,
-	VerificationPersistence,
-	VerificationUpdatePersistence
-} from '../models/types/user';
+import { User, UserPersistence, UserRoles, UserSearch } from '../models/types/user';
 import * as userDb from '../database/user';
 import { DeleteWriteOpResultObject, InsertOneWriteOpResult, UpdateWriteOpResult, WithId } from 'mongodb';
 import { getDateFromString, getDateStringFromDate } from '../utils/date';
@@ -17,13 +9,7 @@ import * as IdentityDocsDb from '../database/identity-docs';
 import { SsiService } from './ssi-service';
 
 export class UserService {
-	private readonly ssiService: SsiService;
-	private readonly serverSecret: string;
-
-	constructor(ssiService: SsiService, serverSecret: string) {
-		this.ssiService = ssiService;
-		this.serverSecret = serverSecret;
-	}
+	constructor(private readonly ssiService: SsiService, private readonly serverSecret: string) {}
 
 	searchUsers = async (userSearch: UserSearch): Promise<User[]> => {
 		const usersPersistence = await userDb.searchUsers(userSearch);
@@ -51,7 +37,7 @@ export class UserService {
 
 	getUser = async (identityId: string): Promise<User | null> => {
 		const userPersistence = await userDb.getUser(identityId);
-		return this.getUserObject(userPersistence);
+		return userPersistence && this.getUserObject(userPersistence);
 	};
 
 	getUsersByIds = async (identityIds: string[]): Promise<User[] | null> => {
@@ -74,6 +60,12 @@ export class UserService {
 		const validator = SchemaValidator.getInstance();
 		validator.validateUser(user);
 
+		const identityDoc = await this.ssiService.getLatestIdentityDoc(user.identityId);
+		const publicKey = this.ssiService.getPublicKey(identityDoc);
+		if (!publicKey || !user.publicKey || publicKey !== user.publicKey) {
+			throw new Error('wrong identity provided');
+		}
+
 		const userPersistence = this.getUserPersistence(user);
 		const res = await userDb.addUser(userPersistence);
 		if (!res?.result?.n) {
@@ -85,10 +77,6 @@ export class UserService {
 	updateUser = async (user: User): Promise<UpdateWriteOpResult> => {
 		const userPersistence = this.getUserPersistence(user);
 		return userDb.updateUser(userPersistence);
-	};
-
-	updateUserVerification = async (vup: VerificationUpdatePersistence): Promise<void> => {
-		await userDb.updateUserVerification(vup);
 	};
 
 	addUserVC = async (vc: VerifiableCredentialJson): Promise<void> => {
@@ -107,43 +95,18 @@ export class UserService {
 		return !(!user.publicKey && !user.identityId);
 	};
 
-	private getVerificationPersistence = (verification: Verification): VerificationPersistence | null => {
-		return (
-			verification && {
-				verificationDate: verification.verificationDate && getDateFromString(verification.verificationDate),
-				lastTimeChecked: verification.lastTimeChecked && getDateFromString(verification.lastTimeChecked),
-				verified: verification.verified,
-				verificationIssuerId: verification.verificationIssuerId
-			}
-		);
-	};
-
-	private getVerificationObject = (verificationPersistence: VerificationPersistence): Verification | null => {
-		return (
-			verificationPersistence && {
-				verified: verificationPersistence.verified,
-				verificationDate: getDateStringFromDate(verificationPersistence.verificationDate),
-				lastTimeChecked: getDateStringFromDate(verificationPersistence.lastTimeChecked),
-				verificationIssuerId: verificationPersistence.verificationIssuerId
-			}
-		);
-	};
-
 	private getUserPersistence = (user: User): UserPersistence | null => {
 		if (user == null || isEmpty(user.identityId)) {
 			throw new Error('Error when parsing the body: identityId must be provided!');
 		}
-		const { publicKey, identityId, username, verification, organization, registrationDate, type, data, verifiableCredentials, role } = user;
+		const { publicKey, identityId, username, registrationDate, claim, verifiableCredentials, role } = user;
 
 		const userPersistence: UserPersistence = {
 			identityId,
 			publicKey,
 			username,
-			type,
-			organization,
 			registrationDate: registrationDate && getDateFromString(registrationDate),
-			verification: this.getVerificationPersistence(verification),
-			data,
+			claim,
 			verifiableCredentials,
 			role: role && (role as UserRoles)
 		};
@@ -153,32 +116,18 @@ export class UserService {
 
 	private getUserObject = (userPersistence: UserPersistence): User | null => {
 		if (userPersistence == null || isEmpty(userPersistence.identityId)) {
-			console.error(`Error when parsing the body, no user id found on persistence model with username ${userPersistence?.username}`);
+			console.error('Error when parsing the body, no identity id found on persistence');
 			return null;
 		}
 
-		const {
-			username,
-			publicKey,
-			identityId,
-			organization,
-			registrationDate,
-			verification,
-			type,
-			data,
-			verifiableCredentials,
-			role
-		} = userPersistence;
+		const { username, publicKey, identityId, registrationDate, claim, verifiableCredentials, role } = userPersistence;
 
 		const user: User = {
 			identityId,
 			publicKey,
 			username,
-			type,
 			registrationDate: getDateStringFromDate(registrationDate),
-			verification: this.getVerificationObject(verification),
-			organization,
-			data,
+			claim,
 			verifiableCredentials,
 			role: role && (role as UserRoles)
 		};

@@ -1,18 +1,11 @@
-import { UserService } from './user-service';
-import { AuthorizationCheck } from '../models/types/verification';
+import { AuthorizationCheck, CredentialTypes } from '../models/types/verification';
 import { User, UserType, UserRoles } from '../models/types/user';
 
 export class AuthorizationService {
-	private readonly userService: UserService;
-
-	constructor(userService: UserService) {
-		this.userService = userService;
-	}
-
 	isAuthorized = async (requestUser: User, identityId: string): Promise<AuthorizationCheck> => {
 		const isAuthorizedUser = this.isAuthorizedUser(requestUser.identityId, identityId);
 		if (!isAuthorizedUser) {
-			const isAuthorizedAdmin = await this.isAuthorizedAdmin(requestUser, identityId);
+			const isAuthorizedAdmin = await this.isAuthorizedAdmin(requestUser);
 			if (!isAuthorizedAdmin) {
 				return { isAuthorized: false, error: new Error('not allowed!') };
 			}
@@ -24,25 +17,20 @@ export class AuthorizationService {
 		return requestUserId === identityId;
 	};
 
-	isAuthorizedAdmin = async (requestUser: User, identityId: string): Promise<boolean> => {
+	isAuthorizedAdmin = async (requestUser: User): Promise<boolean> => {
 		const role = requestUser.role;
-		if (!this.hasAuthorizationType(requestUser.type)) {
-			return false;
-		}
 
 		if (role === UserRoles.Admin) {
 			return true;
-		} else if (role === UserRoles.Manager) {
-			const user = await this.userService.getUser(identityId);
-			const hasSameOrganization = requestUser.organization === user?.organization;
-			if (hasSameOrganization) {
-				return true;
-			}
 		}
 		return false;
 	};
 
-	hasAuthorizationType(type: UserType | string): boolean {
+	hasAuthorizedUserType(type: string): boolean {
 		return type === UserType.Person || type === UserType.Service || type === UserType.Organization;
+	}
+
+	hasVerificationCredentialType(type: string[]): boolean {
+		return type.some((t) => t === CredentialTypes.VerifiedIdentityCredential);
 	}
 }

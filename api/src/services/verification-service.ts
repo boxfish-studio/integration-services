@@ -8,31 +8,28 @@ import {
 	VerifiableCredentialJson,
 	Credential
 } from '../models/types/identity';
-import { User, VerificationUpdatePersistence } from '../models/types/user';
 import { SsiService } from './ssi-service';
 import { UserService } from './user-service';
-import { createNonce } from '../utils/encryption';
 import * as KeyCollectionDb from '../database/key-collection';
 import * as VerifiableCredentialsDb from '../database/verifiable-credentials';
-import * as AuthDb from '../database/auth';
 import * as IdentityDocsDb from '../database/identity-docs';
 import * as TrustedRootsDb from '../database/trusted-roots';
 import { VerificationServiceConfig } from '../models/config/services';
-import { upperFirst } from 'lodash';
 import { JsonldGenerator } from '../utils/jsonld';
+import { Subject } from '../models/types/verification';
 
 export class VerificationService {
 	private noIssuerFoundErrMessage = (issuerId: string) => `No identiity found for issuerId: ${issuerId}`;
-	private readonly ssiService: SsiService;
-	private readonly userService: UserService;
 	private readonly serverSecret: string;
 	private readonly keyCollectionSize: number;
 	private readonly serverIdentityId: string;
 
-	constructor(ssiService: SsiService, userService: UserService, verificationServiceConfig: VerificationServiceConfig) {
+	constructor(
+		private readonly ssiService: SsiService,
+		private readonly userService: UserService,
+		verificationServiceConfig: VerificationServiceConfig
+	) {
 		const { serverSecret, serverIdentityId, keyCollectionSize } = verificationServiceConfig;
-		this.ssiService = ssiService;
-		this.userService = userService;
 		this.serverSecret = serverSecret;
 		this.keyCollectionSize = keyCollectionSize;
 		this.serverIdentityId = serverIdentityId;
@@ -55,19 +52,17 @@ export class VerificationService {
 		return IdentityDocsDb.getIdentity(did, this.serverSecret);
 	}
 
-	verifyIdentity = async (subject: User, issuerId: string, initiatorId: string) => {
+	verifyIdentity = async (subject: Subject, issuerId: string, initiatorId: string) => {
 		const jsonldGen = new JsonldGenerator();
-		const data = jsonldGen.jsonldUserData(subject.type, subject.data);
+		const claim = jsonldGen.jsonldUserData(subject.claim.type, subject.claim);
 
 		const credential: Credential<CredentialSubject> = {
-			type: `${upperFirst(subject.type)}Credential`,
+			type: subject.credentialType,
 			id: subject.identityId,
 			subject: {
-				...data,
+				...claim,
+				type: subject.claim.type,
 				id: subject.identityId,
-				type: subject.type,
-				organization: subject.organization,
-				registrationDate: subject.registrationDate,
 				initiatorId
 			}
 		};
@@ -143,34 +138,9 @@ export class VerificationService {
 		}
 
 		await VerifiableCredentialsDb.revokeVerifiableCredential(vcp, this.serverIdentityId);
-
-		const updatedUser = await this.userService.removeUserVC(vcp.vc);
-		const hasVerifiedVCs = await this.hasVerifiedVerifiableCredential(updatedUser.verifiableCredentials);
-
-		if (updatedUser.verifiableCredentials.length === 0 || !hasVerifiedVCs) {
-			const vup: VerificationUpdatePersistence = {
-				identityId: subjectId,
-				verified: false,
-				lastTimeChecked: new Date(),
-				verificationDate: undefined,
-				verificationIssuerId: undefined
-			};
-			await this.userService.updateUserVerification(vup);
-		}
+		await this.userService.removeUserVC(vcp.vc);
 
 		return res;
-	};
-
-	hasVerifiedVerifiableCredential = async (vcs: VerifiableCredentialJson[]): Promise<boolean> => {
-		if (!vcs || vcs.length === 0) {
-			return false;
-		}
-		const vcVerifiedArr = await Promise.all(
-			vcs.map(async (vc) => {
-				return this.checkVerifiableCredential(vc);
-			})
-		);
-		return vcVerifiedArr.some((v) => v);
 	};
 
 	private updateDatabaseIdentityDoc = async (docUpdate: DocumentJsonUpdate) => {
@@ -191,30 +161,10 @@ export class VerificationService {
 		return trustedRoots.map((root) => root.identityId);
 	};
 
-	getNonce = async (identityId: string) => {
-		const user = await this.userService.getUser(identityId);
-		if (!user) {
-			throw new Error(`no user with id: ${identityId} found!`);
-		}
-
-		const nonce = createNonce();
-		await AuthDb.upsertNonce(user.identityId, nonce);
-		return nonce;
-	};
-
 	setUserVerified = async (identityId: string, issuerId: string, vc: VerifiableCredentialJson) => {
 		if (!issuerId) {
 			throw new Error('No valid issuer id!');
 		}
-		const date = new Date();
-		const vup: VerificationUpdatePersistence = {
-			identityId,
-			verified: true,
-			lastTimeChecked: date,
-			verificationDate: date,
-			verificationIssuerId: issuerId
-		};
-		await this.userService.updateUserVerification(vup);
 		await this.userService.addUserVC(vc);
 	};
 

@@ -1,16 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { UserService } from '../../services/user-service';
+import { ProveOwnershipPostBody } from '../../models/types/request-bodies';
 import { AuthenticationService } from '../../services/authentication-service';
 
 export class AuthenticationRoutes {
-	private readonly authenticationService: AuthenticationService;
-	readonly userService: UserService;
-
-	constructor(authenticationService: AuthenticationService, userService: UserService) {
-		this.authenticationService = authenticationService;
-		this.userService = userService;
-	}
+	constructor(private readonly authenticationService: AuthenticationService) {}
 
 	getNonce = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
@@ -33,7 +27,7 @@ export class AuthenticationRoutes {
 		try {
 			const decodeParam = (param: string): string | undefined => (param ? decodeURI(param) : undefined);
 			const identityId = req.params && decodeParam(<string>req.params['identityId']);
-			const body = req.body;
+			const body: ProveOwnershipPostBody = req.body;
 			const signedNonce = body?.signedNonce;
 
 			if (!signedNonce || !identityId) {

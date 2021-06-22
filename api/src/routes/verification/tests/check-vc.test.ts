@@ -34,13 +34,13 @@ describe('test authentication routes', () => {
 		};
 		ssiService = SsiService.getInstance(identityConfig);
 		userService = new UserService({} as any, '');
-		const authorizationService = new AuthorizationService(userService);
+		const authorizationService = new AuthorizationService();
 		verificationService = new VerificationService(ssiService, userService, {
 			serverSecret,
 			serverIdentityId: ServerIdentityMock.doc.id,
 			keyCollectionSize: 2
 		});
-		verificationRoutes = new VerificationRoutes(verificationService, userService, authorizationService, config);
+		verificationRoutes = new VerificationRoutes(verificationService, authorizationService, config);
 
 		res = {
 			send: sendMock,
