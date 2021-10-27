@@ -201,8 +201,10 @@ export class ChannelService {
 
 				const isAuthor = subscription.type === SubscriptionType.Author;
 				const sub = await this.streamsService.importSubscription(subscription.state, isAuthor);
-				const newSub = await this.streamsService.resetState(channelAddress, sub, isAuthor);
+				const newSub = await this.streamsService.resetState(sub, isAuthor);
 				const newPublicKey = newSub.clone().get_public_key();
+				console.log('newPublicKey', newPublicKey);
+				console.log('subscription.publicKey', subscription.publicKey);
 
 				if (newPublicKey !== subscription.publicKey) {
 					throw new Error('wrong seed inserted');

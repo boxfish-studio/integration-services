@@ -51,7 +51,8 @@ export class ChannelRoutes {
 			const limit = isNaN(limitParam) || limitParam == 0 ? undefined : limitParam;
 			const index = isNaN(indexParam) ? undefined : indexParam;
 			const ascending: boolean = <string>req.query.asc === 'true';
-			const options: ChannelLogRequestOptions = limit !== undefined && index !== undefined ? { limit, index, ascending, startDate, endDate } : { ascending, startDate, endDate };
+			const options: ChannelLogRequestOptions =
+				limit !== undefined && index !== undefined ? { limit, index, ascending, startDate, endDate } : { ascending, startDate, endDate };
 			const channel = await this.channelService.getLogs(channelAddress, identityId, options);
 			return res.status(StatusCodes.OK).send(channel);
 		} catch (error) {

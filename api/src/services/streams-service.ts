@@ -274,11 +274,10 @@ export class StreamsService {
 		}
 	}
 
-	async resetState(_channelLink: string, subscription: Author | Subscriber, isAuthor: boolean): Promise<Author | Subscriber> {
+	async resetState(subscription: Author | Subscriber, isAuthor: boolean): Promise<Author | Subscriber> {
 		if (isAuthor) {
-			throw new Error('not supported for authors');
-			// TODO#196 this method is currently not exposed
-			// const client = this.getClient(this.config.node);
+			(subscription as Author).clone().reset_state();
+			return subscription;
 		}
 		(subscription as Subscriber).clone().reset_state();
 		return subscription;
