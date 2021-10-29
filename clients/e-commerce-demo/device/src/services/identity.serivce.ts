@@ -3,8 +3,8 @@ import path from 'path';
 import { CONFIG, DeviceIdentity } from '../config/config';
 import { axiosClient } from '../utils/client';
 
-export const createIdentity = async (): Promise<string | undefined> => {
-	const identityPath = path.join(__dirname, '..', 'config', 'DeviceIdentity.json');
+export const createIdentity = async (index: number): Promise<string | undefined> => {
+	const identityPath = path.join(__dirname, '..', 'config', `DeviceIdentity-${index}.json`);
 	let file, identity;
 	try {
 		file = fs.readFileSync(identityPath);

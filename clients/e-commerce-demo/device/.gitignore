@@ -1,4 +1,4 @@
-DeviceIdentity.json
+DeviceIdentity-*.json
 .env
 dist/
 node_modules/

@@ -2,7 +2,8 @@ import { Config } from '../models/config.model';
 
 export const CONFIG: Config = {
 	baseUrl: process.env.BASE_URL,
-	apiKey: process.env.API_KEY
+	apiKey: process.env.API_KEY,
+	index: process.env.INDEX
 };
 
 export const DeviceIdentity = {

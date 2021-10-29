@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { CONFIG } from '../config/config';
 import { fetchAuth } from '../services/authentication.service';
 
 const getBearerToken = async () => {
-	const response = await fetchAuth();
+	const response = await fetchAuth(CONFIG.index);
 	if (response.status === 200) {
 		const bearerToken = 'Bearer ' + response.data?.jwt;
 		return bearerToken;

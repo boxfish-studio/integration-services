@@ -4,8 +4,8 @@ import { CONFIG } from '../config/config';
 import { getHexEncodedKey, signNonce } from '../utils/encryption';
 import { axiosClient } from '../utils/client';
 
-export const fetchAuth = async (): Promise<any> => {
-	const identityPath = path.join(__dirname, '..', 'config', 'DeviceIdentity.json');
+export const fetchAuth = async (index: string): Promise<any> => {
+	const identityPath = path.join(__dirname, '..', 'config', `DeviceIdentity-${index}.json`);
 	let file, identity;
 	try {
 		file = fs.readFileSync(identityPath);
