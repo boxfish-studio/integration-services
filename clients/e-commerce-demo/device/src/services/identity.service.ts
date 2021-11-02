@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { CONFIG, DeviceIdentity } from '../config/config';
+import { CONFIG, LogisticDeviceIdentity, SellerServiceIdentity } from '../config/config';
 import { axiosClient } from '../utils/client';
 
 export const createIdentity = async (index: number): Promise<string | undefined> => {
@@ -18,9 +18,10 @@ export const createIdentity = async (index: number): Promise<string | undefined>
 		return identity?.doc?.id;
 	}
 	console.log('Creating the device identity...');
+	const newIdentityData = index === 1 ? SellerServiceIdentity : LogisticDeviceIdentity;
 	const apiKey = CONFIG.apiKey ? `?api-key=${CONFIG.apiKey}` : '';
 
-	const res = await axiosClient.post(`${CONFIG.baseUrl}/identities/create${apiKey}`, JSON.stringify(DeviceIdentity));
+	const res = await axiosClient.post(`${CONFIG.baseUrl}/identities/create${apiKey}`, JSON.stringify(newIdentityData));
 
 	if (res?.status === 201) {
 		console.log('Successfully created the identity!');

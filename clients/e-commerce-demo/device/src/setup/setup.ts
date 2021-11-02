@@ -1,4 +1,4 @@
-import { createIdentity } from '../services/identity.serivce';
+import { createIdentity } from '../services/identity.service';
 
 import { getChannelAddress } from '../config/config';
 

@@ -23,6 +23,24 @@ export const DeviceIdentity = {
 	}
 };
 
+export const SellerServiceIdentity = {
+	username: 'seller-service-1',
+	claim: {
+		type: 'Service',
+		name: 'VIP Seller Service'
+	}
+};
+
+export const LogisticDeviceIdentity = {
+	username: 'logistic-device',
+	claim: {
+		type: 'Device',
+		category: ['sensor'],
+		controlledProperty: ['location'],
+		name: 'VIP Logistic Device'
+	}
+};
+
 export const getChannelAddress = () => {
 	const channelAddress = process.env.CHANNEL_ADDRESS;
 	if (channelAddress === '<INSERT_CHANNEL_ADDRESS>' || !channelAddress) {
