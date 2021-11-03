@@ -3,7 +3,7 @@ import { axiosClient } from '../utils/client';
 
 export const writeChannel = async (payload: any, type: string) => {
 	try {
-		console.log(`Writing ${type} to dlt...`);
+		console.log(`Writing ${payload?.description} to dlt...`);
 		const apiKey = CONFIG.apiKey ? `?api-key=${CONFIG.apiKey}` : '';
 		const channelAddress = getChannelAddress();
 		const body = {
