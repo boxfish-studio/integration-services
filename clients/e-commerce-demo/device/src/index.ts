@@ -31,7 +31,16 @@ const startDevice = async () => {
 		const log3 = { description: 'Arrived at destination', date: new Date().toISOString(), coordinates: { lat: 52.520007, lng: 13.404954 } }; // berlin
 		await writeChannel({ ...log3, identityId }, 'logistic-log');
 
-		const log4 = { description: 'Package handed over to recipient', date: new Date().toISOString(), coordinates: { lat: 52.520007, lng: 13.404954 } }; // berlin
+		const log4 = {
+			description: 'Package handed over to recipient',
+			date: new Date().toISOString(),
+			coordinates: { lat: 52.520007, lng: 13.404954 },
+			signature: {
+				nonce: '1d4460be22c2769f88c24543b941fab2e9723f07',
+				signedNonce:
+					'879005757aa9d4238ca68972faf8e6d869b7c7eb890d09d0f0b4154ae92d6e8385c29434f3a998d3fef380a7f44034926e19f55312031306b2cfd26a0411e803'
+			}
+		}; // berlin
 		await writeChannel({ ...log4, identityId }, 'logistic-log');
 	}
 
