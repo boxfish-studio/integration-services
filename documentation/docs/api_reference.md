@@ -91,6 +91,7 @@ Search for a channel. A client can search for a channel which it is interested i
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /channel-info/channel/{channelAddress}
 
@@ -145,6 +146,7 @@ Delete information of a channel with address channel-address. The author of a ch
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /channel-info/channel
 
@@ -171,6 +173,7 @@ Add an existing channel into the database. Clients are able to add existing chan
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 #### PUT
 ##### Summary
@@ -195,6 +198,7 @@ Update channel information. The author of a channel can update topics of a chann
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /channels/create
 
@@ -220,6 +224,7 @@ Create a new channel. An author can create a new channel with specific topics wh
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /channels/logs/{channelAddress}
 
@@ -251,6 +256,7 @@ Write data to a channel with address channel address. Write permission is mandat
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 #### GET
 ##### Summary
@@ -285,6 +291,7 @@ Get data from the channel with address channel address. The first possible messa
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /channels/history/{channelAddress}
 
@@ -341,6 +348,7 @@ Validates data of a channel.
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /channels/re-import/{channelAddress}
 
@@ -372,6 +380,7 @@ The user can decide to re-import the data from the Tangle into the database. A r
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /identities/create
 
@@ -426,6 +435,7 @@ Search for identities in the system and returns a list of existing identities.
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /identities/identity/{identityId}
 
@@ -482,6 +492,7 @@ Removes an identity from the Bridge. An identity can only delete itself and is n
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /identities/identity
 
@@ -524,6 +535,7 @@ Update claim of a registered identity.
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /info
 
@@ -574,6 +586,7 @@ Get all subscriptions of a channel. Use the is-authorized query parameter to fil
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /subscriptions/{channelAddress}/{identityId}
 
@@ -606,6 +619,7 @@ Get a subscription of a channel by identity id.
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 #### POST
 ##### Summary
@@ -637,6 +651,7 @@ Adds an existing subscription (e.g. the subscription was not created with the ap
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 #### PUT
 ##### Summary
@@ -669,6 +684,7 @@ Updates an existing subscription
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 #### DELETE
 ##### Summary
@@ -701,6 +717,7 @@ Deletes an existing subscription
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /subscriptions/request/{channelAddress}
 
@@ -733,6 +750,7 @@ Request subscription to a channel with address channel-address. A client can req
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /subscriptions/authorize/{channelAddress}
 
@@ -764,6 +782,7 @@ Authorize a subscription to a channel with address channel-address. The author o
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /subscriptions/revoke/{channelAddress}
 
@@ -795,6 +814,7 @@ Revoke subscription to a channel. Only the author of a channel can revoke a subs
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /verification/latest-document/{identityId}
 
@@ -845,6 +865,7 @@ Adds Trusted Root identity identifiers (DIDs). Trusted roots are DIDs of identit
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 #### GET
 ##### Summary
@@ -893,6 +914,7 @@ Remove Trusted Root identity identifiers (DIDs). Trusted roots are DIDs of ident
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /verification/create-credential
 
@@ -918,6 +940,7 @@ Verify the authenticity of an identity (of an individual, organization or object
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### /verification/check-credential
 
@@ -962,6 +985,7 @@ Revoke one specific verifiable credential of an identity. In the case of individ
 | Security Schema | Scopes |
 | --- | --- |
 | BearerAuth | |
+| ApiKey | |
 
 ### Models
 
