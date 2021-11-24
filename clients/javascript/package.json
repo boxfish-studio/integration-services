@@ -4,6 +4,7 @@
   "description": "This_is_the_API_documentation_for_the_Integration_Services__Have_a_look_at_the_repository_for_examples_at__Github_httpsgithub_comiotaledgerintegration_services_____________For_further_information_on_the_Audit_Trail_GW_API_have_a_look_at__Audit_Trail_API_httpsgithub_comiotaledgerintegration_servicesblobmasterapiusage_audit_trail_GW_md_and_head_to_____________SSI_Bridge_httpsgithub_comiotaledgerintegration_servicesblobmasterapiusage_ssi_bridge_md_for_information_about_the_SSI_Bridge_____________",
   "license": "Unlicense",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "mocha --require @babel/register --recursive"
   },
