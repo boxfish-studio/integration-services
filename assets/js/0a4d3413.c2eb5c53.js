@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[5262],{83135:function(i){i.exports=JSON.parse('{"allTagsPath":"/integration-services/blog/tags","slug":"/integration-services/blog/tags/io-t","name":"IoT","count":2,"permalink":"/integration-services/blog/tags/io-t"}')}}]);

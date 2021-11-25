@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[8756],{11637:function(a){a.exports=JSON.parse('{"allTagsPath":"/integration-services/blog/tags","slug":"/integration-services/blog/tags/dao","name":"DAO","count":2,"permalink":"/integration-services/blog/tags/dao"}')}}]);

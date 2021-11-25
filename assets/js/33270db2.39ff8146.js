@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[4154],{36621:function(s){s.exports=JSON.parse('{"allTagsPath":"/integration-services/blog/tags","slug":"/integration-services/blog/tags/gossip","name":"Gossip","count":1,"permalink":"/integration-services/blog/tags/gossip"}')}}]);

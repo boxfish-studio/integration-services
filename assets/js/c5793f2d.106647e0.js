@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[6477],{29863:function(t){t.exports=JSON.parse('{"allTagsPath":"/integration-services/blog/tags","slug":"/integration-services/blog/tags/otv","name":"OTV","count":1,"permalink":"/integration-services/blog/tags/otv"}')}}]);

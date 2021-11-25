@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[3497],{14015:function(e){e.exports=JSON.parse('{"allTagsPath":"/integration-services/blog/tags","slug":"/integration-services/blog/tags/multiverse","name":"Multiverse","count":1,"permalink":"/integration-services/blog/tags/multiverse"}')}}]);
