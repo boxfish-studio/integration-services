@@ -15,7 +15,7 @@ import {
 	FindOneOptions,
 	CommonOptions
 } from 'mongodb';
-import { ClientEncryption } from 'mongodb-client-encryption';
+	import { ClientEncryption } from 'mongodb-client-encryption';
 import { Logger } from '../utils/logger';
 
 const logger = Logger.getInstance();
@@ -43,7 +43,9 @@ export class MongoDbService {
 
 	static async getDocument<T>(collectionName: string, query: FilterQuery<T>, options?: WithoutProjection<FindOneOptions<T>>): Promise<T> {
 		const collection = MongoDbService.getCollection(collectionName);
-		return collection.findOne(query, options);
+		const item = await collection.findOne(query, options);
+		await MongoDbService.decrypt(collectionName, item);
+		return item;
 	}
 
 	static async getDocuments<T>(
@@ -52,7 +54,11 @@ export class MongoDbService {
 		options?: WithoutProjection<FindOneOptions<T>>
 	): Promise<T[] | null> {
 		const collection = MongoDbService.getCollection(collectionName);
-		return collection.find(query, options).toArray();
+		const result = await collection.find(query, options).toArray();
+		for (const item in result) {
+			await MongoDbService.decrypt(collectionName, item);
+		}
+		return result;
 	}
 
 	static async insertDocument<T>(
@@ -61,21 +67,9 @@ export class MongoDbService {
 		options?: CollectionInsertOneOptions
 	): Promise<InsertOneWriteOpResult<WithId<T>> | null> {
 		const collection = MongoDbService.getCollection(collectionName);
-
-		// TODO add field with encrypted fields and then encrypt only these specific ones
-		const keyId = await MongoDbService.clientEncryption.createDataKey('local');
-
-		const encryptedData = MongoDbService.clientEncryption.encrypt('value', {
-			keyId,
-			algorithm: 'AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic'
-		});
-
-		const merged = {
-			...data,
-			encryptedData
-		};
-
-		return collection.insertOne(merged, options);
+		await MongoDbService.encrypt(collectionName, data);
+		console.log("Inserting", data);
+		return collection.insertOne(data, options);
 	}
 
 	static async insertDocuments(
@@ -84,7 +78,9 @@ export class MongoDbService {
 		options?: CollectionInsertManyOptions
 	): Promise<InsertWriteOpResult<any>> {
 		const collection = MongoDbService.getCollection(collectionName);
-
+		for (const item in data) {
+			await MongoDbService.encrypt(collectionName, item);
+		}
 		return collection.insertMany(data, options);
 	}
 
@@ -133,6 +129,7 @@ export class MongoDbService {
 
 		return updateObject;
 	}
+
 	/**
 	 * Connect to the mongodb.
 	 *
@@ -142,7 +139,7 @@ export class MongoDbService {
 	 * @return {*}  {Promise<MongoClient>}
 	 * @memberof MongoDbService
 	 */
-	static async connect(url: string, dbName: string, serverSecret: string): Promise<MongoClient> {
+	static async connect(url: string, dbName: string, clientEncryptionSecret: string): Promise<MongoClient> {
 		if (MongoDbService.client) {
 			return;
 		}
@@ -162,12 +159,13 @@ export class MongoDbService {
 				MongoDbService.db = client.db(dbName);
 
 				// TODO THIS CRASHES SINCE kmsProviders.local.key has wrong length
-				console.log('serverSecret', serverSecret);
+				// console.log('serverSecret', secret);
+
 				MongoDbService.clientEncryption = new ClientEncryption(MongoDbService.client, {
 					keyVaultNamespace: 'client.encryption',
 					kmsProviders: {
 						local: {
-							key: serverSecret // The master key used for encryption/decryption. A 96-byte long Buffer
+							key: Buffer.from(clientEncryptionSecret, 'hex') // The master key used for encryption/decryption. A 96-byte long Buffer
 						}
 					}
 				});
@@ -187,4 +185,31 @@ export class MongoDbService {
 	public static disconnect(): Promise<void> {
 		return MongoDbService.client.close();
 	}
+
+	public static async encrypt(collection: string, data: any) {
+		if (data === null) {
+			return
+		}
+		if (collection === "identity-docs") {
+			const secret = data?.key?.secret;
+			if (secret) {
+				const keyId = await MongoDbService.clientEncryption.createDataKey('local');
+				data.key.secret = await MongoDbService.clientEncryption.encrypt(secret, {
+					keyId,
+					algorithm: 'AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic'
+				});
+			}
+		}
+	}
+
+	public static async decrypt(collection: string, data: any) {
+		if (data === null) {
+			return
+		}
+		if (collection === "identity-docs") {
+			const secret = await MongoDbService.clientEncryption.decrypt(data?.key?.secret);
+			data.key.secret = secret;
+		}
+	}
+
 }

@@ -14,6 +14,8 @@ import yargs from 'yargs';
 import { KeyGenerator } from './setup';
 import { ConfigurationService } from './services/configuration-service';
 
+const CLIENT_ENCRYPTION_SECRET = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
 	.command('keygen', 'Generate root identity for integration service API', {})
@@ -39,7 +41,7 @@ async function startServer() {
 		const configService = ConfigurationService.getInstance(Logger.getInstance());
 		const config = configService.config;
 
-		await MongoDbService.connect(config.databaseUrl, config.databaseName, config.serverSecret);
+		await MongoDbService.connect(config.databaseUrl, config.databaseName, CLIENT_ENCRYPTION_SECRET);
 
 		const rootIdentity = await configService.getRootIdentityId();
 
@@ -74,7 +76,7 @@ async function startServer() {
 		app.use(errorMiddleware);
 		const server = app.listen(port, async () => {
 			logger.log(`Started API Server on port ${port}`);
-			await MongoDbService.connect(dbUrl, dbName, config.serverSecret);
+			await MongoDbService.connect(dbUrl, dbName, CLIENT_ENCRYPTION_SECRET);
 		});
 		server.setTimeout(50000);
 	} catch (e) {
@@ -89,7 +91,7 @@ async function keyGen() {
 		const configService = ConfigurationService.getInstance(Logger.getInstance());
 		const config = configService.config;
 
-		await MongoDbService.connect(config.databaseUrl, config.databaseName, config.serverSecret);
+		await MongoDbService.connect(config.databaseUrl, config.databaseName, CLIENT_ENCRYPTION_SECRET);
 		const keyGenerator: KeyGenerator = new KeyGenerator(configService);
 
 		await keyGenerator.keyGeneration();
