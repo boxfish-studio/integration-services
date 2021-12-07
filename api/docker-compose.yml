@@ -1,6 +1,6 @@
 version: '3.7'
-services:
 
+services:
   mongo:
     image: mongo:latest
     restart: always
@@ -16,7 +16,7 @@ services:
 
   initialize-job:
     build: .
-    environment: 
+    environment:
       API_VERSION: v1
       NETWORK: main
       DATABASE_NAME: ${DATABASE_NAME}
@@ -26,12 +26,12 @@ services:
       SERVER_SECRET: ${SERVER_SECRET}
     restart: on-failure
     command: node dist/index.js keygen
-    depends_on: 
+    depends_on:
       - mongo
 
   api:
     build: .
-    environment: 
+    environment:
       PORT: 3000
       API_VERSION: v1
       NETWORK: main
@@ -41,11 +41,25 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       SERVER_SECRET: ${SERVER_SECRET}
     restart: always
-    depends_on: 
+    depends_on:
       - mongo
       - initialize-job
     ports:
       - 3000:3000
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    #   - ../prometheus/data:/prometheus:rw
+    ports:
+      - '9090:9090/tcp'
+    depends_on:
+      - api
 
 volumes:
   mongodb_data_container:

@@ -14,6 +14,30 @@ import yargs from 'yargs';
 import { KeyGenerator } from './setup';
 import { ConfigurationService } from './services/configuration-service';
 
+//prometheus integration:
+import { URL } from 'url';
+import promClient from 'prom-client';
+
+// Create a Registry which registers the metrics
+const register = new promClient.Registry();
+// Add a label which is added to all metrics
+register.setDefaultLabels({
+	app: 'integration-services'
+});
+// Enable the collection of default metrics
+promClient.collectDefaultMetrics({ register });
+
+// Create a histogram metric
+const httpRequestDurationMicroseconds = new promClient.Histogram({
+	name: 'http_request_duration_seconds',
+	help: 'Duration of HTTP requests in microseconds',
+	labelNames: ['method', 'route', 'code'],
+	buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
+});
+
+// Register the histogram
+register.registerMetric(httpRequestDurationMicroseconds);
+
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
 	.command('keygen', 'Generate root identity for integration service API', {})
@@ -33,6 +57,7 @@ process.on('uncaughtException', function (err) {
 	process.exit(); // exit the process to avoid unknown state
 });
 
+// work here:
 async function startServer() {
 	try {
 		const logger = Logger.getInstance();
@@ -49,7 +74,6 @@ async function startServer() {
 		}
 
 		const app = express();
-
 		const port = config.port;
 		const dbUrl = config.databaseUrl;
 		const dbName = config.databaseName;
@@ -70,6 +94,25 @@ async function startServer() {
 		useRouter(app, prefix + '/authentication', authenticationRouter);
 		useRouter(app, prefix + '/verification', verificationRouter);
 		useRouter(app, '', serverInfoRouter);
+
+		// Prometheus client integration:
+		app.get('/', function (req, res) {
+			const baseURL = req.protocol + '://' + req.headers.host + '/';
+			const route = new URL(req.url, baseURL);
+			// Start the timer
+			const end = httpRequestDurationMicroseconds.startTimer();
+			// 	// Return all metrics the Prometheus exposition format
+			res.setHeader('Content-Type', register.contentType);
+			res.end(register.metrics());
+
+			// if (route === '/metrics') {
+			// 	// Return all metrics the Prometheus exposition format
+			// 	res.setHeader('Content-Type', register.contentType);
+			// 	res.end(register.metrics());
+			// }
+			// End timer and add labels
+			end({ route, code: res.statusCode, method: req.method });
+		});
 
 		app.use(errorMiddleware);
 		const server = app.listen(port, async () => {
