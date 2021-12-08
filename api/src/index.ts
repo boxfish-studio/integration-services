@@ -96,21 +96,15 @@ async function startServer() {
 		useRouter(app, '', serverInfoRouter);
 
 		// Prometheus client integration:
-		app.get('/', function (req, res) {
+		app.get('/metrics', async function (req, res) {
 			const baseURL = req.protocol + '://' + req.headers.host + '/';
-			const route: unknown = new URL(req.url, baseURL);
+			const route: string = new URL(req.url, baseURL).toString();
 			// Start the timer
 			const end = httpRequestDurationMicroseconds.startTimer();
-			// 	// Return all metrics the Prometheus exposition format
-			// res.setHeader('Content-Type', register.contentType);
-			// res.end(register.metrics());
 
-			if (route === '/metrics') {
-				// Return all metrics the Prometheus exposition format
-				console.log('metrics active');
-				res.setHeader('Content-Type', register.contentType);
-				res.end(register.metrics());
-			}
+			// 	// Return all metrics the Prometheus exposition format
+			res.setHeader('Content-Type', register.contentType);
+			res.end(await register.metrics());
 
 			// End timer and add labels
 			end({ route, code: res.statusCode, method: req.method });
