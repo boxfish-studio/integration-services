@@ -1,0 +1,17 @@
+{
+	"ulid": "01FPDB3J3SB21SYTK9TBMEJF2R",
+	"minTime": 1638967081725,
+	"maxTime": 1638972000000,
+	"stats": {
+		"numSamples": 191554,
+		"numSeries": 700,
+		"numChunks": 1196
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01FPDB3J3SB21SYTK9TBMEJF2R"
+		]
+	},
+	"version": 1
+}
