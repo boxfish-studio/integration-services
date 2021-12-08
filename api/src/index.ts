@@ -98,18 +98,20 @@ async function startServer() {
 		// Prometheus client integration:
 		app.get('/', function (req, res) {
 			const baseURL = req.protocol + '://' + req.headers.host + '/';
-			const route = new URL(req.url, baseURL);
+			const route: unknown = new URL(req.url, baseURL);
 			// Start the timer
 			const end = httpRequestDurationMicroseconds.startTimer();
 			// 	// Return all metrics the Prometheus exposition format
-			res.setHeader('Content-Type', register.contentType);
-			res.end(register.metrics());
+			// res.setHeader('Content-Type', register.contentType);
+			// res.end(register.metrics());
 
-			// if (route === '/metrics') {
-			// 	// Return all metrics the Prometheus exposition format
-			// 	res.setHeader('Content-Type', register.contentType);
-			// 	res.end(register.metrics());
-			// }
+			if (route === '/metrics') {
+				// Return all metrics the Prometheus exposition format
+				console.log('metrics active');
+				res.setHeader('Content-Type', register.contentType);
+				res.end(register.metrics());
+			}
+
 			// End timer and add labels
 			end({ route, code: res.statusCode, method: req.method });
 		});
