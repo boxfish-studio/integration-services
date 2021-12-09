@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[5643],{72596:function(e){e.exports=JSON.parse('{"permalink":"/integration-services/blog/page/2","page":2,"postsPerPage":10,"totalPages":3,"totalCount":21,"previousPage":"/integration-services/blog","nextPage":"/integration-services/blog/page/3","blogDescription":"Blog","blogTitle":"Blog"}')}}]);

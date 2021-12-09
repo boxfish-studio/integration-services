@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkiota_wiki=self.webpackChunkiota_wiki||[]).push([[1434],{8059:function(s){s.exports=JSON.parse('{"allTagsPath":"/integration-services/blog/tags","slug":"/integration-services/blog/tags/assembly","name":"Assembly","count":1,"permalink":"/integration-services/blog/tags/assembly"}')}}]);
