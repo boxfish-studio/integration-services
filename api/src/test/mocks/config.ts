@@ -1,4 +1,11 @@
 import { Config, IdentityConfig, StreamsConfig } from '../../models/config';
+import { RateLimiterConfig } from '../../models/config/index';
+
+export const RateLimiterConfigMock: RateLimiterConfig = {
+	enabled: true,
+	limitingRequests: 10,
+	limitingWindowDuration: 1
+};
 
 export const StreamsConfigMock: StreamsConfig = {
 	node: '',
@@ -28,5 +35,6 @@ export const ConfigMock: Config = {
 	permaNode: 'testpermanodeurl',
 	hornetNode: 'testhornetnodeurl',
 	streamsConfig: StreamsConfigMock,
+	rateLimiterConfig: RateLimiterConfigMock,
 	commitHash: ''
 };

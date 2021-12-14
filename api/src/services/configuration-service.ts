@@ -1,5 +1,5 @@
 import { Config } from '../models/config';
-import { IdentityConfig, StreamsConfig } from '../models/config/index';
+import { IdentityConfig, StreamsConfig, RateLimiterConfig } from '../models/config/index';
 import * as Identity from '@iota/identity-wasm/node';
 import isEmpty from 'lodash/isEmpty';
 import { getServerIdentities } from '../database/user';
@@ -37,8 +37,14 @@ export class ConfigurationService {
 		keyCollectionTag: 'key-collection'
 	};
 
+	rateLimiterConfig: RateLimiterConfig = {
+		enabled: process.env.ENABLE_RATE_LIMITING == 'true' || process.env.ENABLE_RATE_LIMITING == 'TRUE',
+		limitingRequests: this.parseEnvVar(process.env.RATE_LIMITING_REQUESTS) || 10,
+		limitingWindowDuration: this.parseEnvVar(process.env.RATE_LIMITING_WINDOW_DURATION) || 1
+	};
+
 	config: Config = {
-		port: process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000,
+		port: this.parseEnvVar(process.env.PORT) || 3000,
 		apiVersion: VERSION,
 		databaseUrl: process.env.DATABASE_URL,
 		databaseName: process.env.DATABASE_NAME,
@@ -49,6 +55,7 @@ export class ConfigurationService {
 		commitHash: process.env.COMMIT_HASH,
 		identityConfig: this.identityConfig,
 		streamsConfig: this.streamsConfig,
+		rateLimiterConfig: this.rateLimiterConfig,
 		jwtExpiration: !isEmpty(process.env.JWT_EXPIRATION) ? process.env.JWT_EXPIRATION : '1 day'
 	};
 
@@ -110,6 +117,13 @@ export class ConfigurationService {
 		}
 
 		return null;
+	}
+	private parseEnvVar(envVar: string): number | null {
+		const num = Number.parseInt(envVar, 10);
+		if (isNaN(num)) {
+			return undefined;
+		}
+		return num;
 	}
 
 	private assertConfig() {

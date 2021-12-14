@@ -56,11 +56,16 @@ async function startServer() {
 		const dbName = config.databaseName;
 		const version = config.apiVersion;
 		const openapiSpecification = swaggerJsdoc(openApiDefinition);
+		const rateLimiterConfig = config.rateLimiterConfig;
+		console.log('rateLimiterConfig', rateLimiterConfig);
 
 		app.use(express.json({ limit: '10mb' }));
 		app.use(express.urlencoded({ limit: '10mb', extended: true }));
 		app.use(expressWinston.logger(logger.getExpressWinstonOptions()));
-		app.use(rateLimiter);
+
+		if (rateLimiterConfig.enabled) {
+			app.use(rateLimiter(rateLimiterConfig.limitingRequests, rateLimiterConfig.limitingWindowDuration));
+		}
 
 		app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification, { explorer: true }));
 

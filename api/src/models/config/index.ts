@@ -7,6 +7,7 @@ export interface Config {
 	databaseName: string;
 	identityConfig: IdentityConfig;
 	streamsConfig: StreamsConfig;
+	rateLimiterConfig: RateLimiterConfig;
 	serverSecret: string;
 	apiKey: string | undefined;
 	hornetNode: string;
@@ -29,4 +30,10 @@ export interface StreamsConfig {
 	statePassword: string;
 	node: string;
 	permaNode: string;
+}
+
+export interface RateLimiterConfig {
+	enabled: boolean;
+	limitingRequests: number;
+	limitingWindowDuration: number;
 }

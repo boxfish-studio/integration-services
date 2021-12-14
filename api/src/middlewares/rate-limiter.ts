@@ -2,12 +2,12 @@ import { RateLimiterMongo } from 'rate-limiter-flexible';
 import { MongoDbService } from '../services/mongodb-service';
 import { Request, Response, NextFunction } from 'express';
 
-export const rateLimiter = (req: Request, res: Response, next: NextFunction) => {
+export const rateLimiter = (points: number, duration: number) => (req: Request, res: Response, next: NextFunction) => {
 	const rateLimiter = new RateLimiterMongo({
 		storeClient: MongoDbService.client,
 		keyPrefix: 'middleware',
-		points: 10, // X requests
-		duration: 1 // per Y second by IP
+		points, // X requests
+		duration // per Y second by IP
 	});
 
 	rateLimiter
