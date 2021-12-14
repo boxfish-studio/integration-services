@@ -1,0 +1,17 @@
+{
+	"ulid": "01FPXBXEHMPQM7SCG6A4V89GHZ",
+	"minTime": 1639504800000,
+	"maxTime": 1639512000000,
+	"stats": {
+		"numSamples": 137440,
+		"numSeries": 810,
+		"numChunks": 1378
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01FPXBXEHMPQM7SCG6A4V89GHZ"
+		]
+	},
+	"version": 1
+}
