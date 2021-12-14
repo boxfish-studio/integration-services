@@ -13,6 +13,7 @@ import { serverInfoRouter } from './routers/server-info';
 import yargs from 'yargs';
 import { KeyGenerator } from './setup';
 import { ConfigurationService } from './services/configuration-service';
+import { rateLimiter } from './middlewares/rate-limiter';
 
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
@@ -59,6 +60,7 @@ async function startServer() {
 		app.use(express.json({ limit: '10mb' }));
 		app.use(express.urlencoded({ limit: '10mb', extended: true }));
 		app.use(expressWinston.logger(logger.getExpressWinstonOptions()));
+		app.use(rateLimiter);
 
 		app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification, { explorer: true }));
 

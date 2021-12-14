@@ -59,6 +59,7 @@
     "mongodb": "^3.6.4",
     "noble-ed25519": "^1.0.3",
     "node-fetch": "^2.6.1",
+    "rate-limiter-flexible": "^2.3.6",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6",
     "winston": "^3.3.3",
