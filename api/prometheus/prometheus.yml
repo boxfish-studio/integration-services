@@ -5,9 +5,9 @@ global:
 
 # Load and evaluate rules in this file every 'evaluation_interval' seconds.
 rule_files:
-  - './prometheus.rules.yml'
-  - './cpu.rules.yml'
-  - './ram.rules.yml'
+  - '/etc/prometheus/rules/prometheus.rules.yml'
+  - '/etc/prometheus/rules/cpu.rules.yml'
+  - '/etc/prometheus/rules/ram.rules.yml'
 
 alerting:
   alertmanagers:

@@ -15,28 +15,36 @@ import { KeyGenerator } from './setup';
 import { ConfigurationService } from './services/configuration-service';
 
 //prometheus integration:
-import { URL } from 'url';
 import promClient from 'prom-client';
 
-// Create a Registry which registers the metrics
 const register = new promClient.Registry();
-// Add a label which is added to all metrics
 register.setDefaultLabels({
 	app: 'integration-services'
 });
-// Enable the collection of default metrics
+
 promClient.collectDefaultMetrics({ register });
 
-// Create a histogram metric
+// Create a histogram metric:
 const httpRequestDurationMicroseconds = new promClient.Histogram({
 	name: 'http_request_duration_seconds',
 	help: 'Duration of HTTP requests in microseconds',
-	labelNames: ['method', 'route', 'code'],
+	labelNames: ['method', 'path', 'code'],
 	buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
 });
 
 // Register the histogram
 register.registerMetric(httpRequestDurationMicroseconds);
+
+console.log('Hello');
+// // Create the count metric:
+// const httpRequestOperationsTotal = new promClient.Counter({
+// 	name: 'node_request_operations_total',
+// 	help: 'The total number of processed requests',
+// 	labelNames: ['method']
+// });
+
+// // Register the the counter
+// register.registerMetric(httpRequestOperationsTotal);
 
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
@@ -57,17 +65,13 @@ process.on('uncaughtException', function (err) {
 	process.exit(); // exit the process to avoid unknown state
 });
 
-// work here:
 async function startServer() {
 	try {
 		const logger = Logger.getInstance();
 		const configService = ConfigurationService.getInstance(Logger.getInstance());
 		const config = configService.config;
-
 		await MongoDbService.connect(config.databaseUrl, config.databaseName);
-
 		const rootIdentity = await configService.getRootIdentityId();
-
 		// setup did for server if not exists
 		if (!rootIdentity) {
 			process.exit(0);
@@ -97,8 +101,8 @@ async function startServer() {
 
 		// Prometheus client integration:
 		app.get('/metrics', async function (req, res) {
-			const baseURL = req.protocol + '://' + req.headers.host + '/';
-			const route: string = new URL(req.url, baseURL).toString();
+			// const path = req.url;
+			const path = req.route.path;
 			// Start the timer
 			const end = httpRequestDurationMicroseconds.startTimer();
 
@@ -107,7 +111,7 @@ async function startServer() {
 			res.end(await register.metrics());
 
 			// End timer and add labels
-			end({ route, code: res.statusCode, method: req.method });
+			end({ path, code: res.statusCode, method: req.method });
 		});
 
 		app.use(errorMiddleware);

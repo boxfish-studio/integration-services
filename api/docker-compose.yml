@@ -41,6 +41,9 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       SERVER_SECRET: ${SERVER_SECRET}
     restart: always
+    command: npm run serve
+    volumes:
+      - ./:/usr/src/app
     depends_on:
       - mongo
       - initialize-job
@@ -56,6 +59,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/data:/prometheus:rw
+      - ./prometheus/rules:/etc/prometheus/rules
     ports:
       - '9090:9090/tcp'
     depends_on:
