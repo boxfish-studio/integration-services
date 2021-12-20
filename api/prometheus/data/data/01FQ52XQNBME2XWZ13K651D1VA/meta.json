@@ -1,0 +1,17 @@
+{
+	"ulid": "01FQ52XQNBME2XWZ13K651D1VA",
+	"minTime": 1639756805536,
+	"maxTime": 1639764000000,
+	"stats": {
+		"numSamples": 258008,
+		"numSeries": 617,
+		"numChunks": 2468
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01FQ52XQNBME2XWZ13K651D1VA"
+		]
+	},
+	"version": 1
+}

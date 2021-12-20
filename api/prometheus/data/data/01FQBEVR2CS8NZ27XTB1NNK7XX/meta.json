@@ -1,0 +1,17 @@
+{
+	"ulid": "01FQBEVR2CS8NZ27XTB1NNK7XX",
+	"minTime": 1639901437503,
+	"maxTime": 1639908000000,
+	"stats": {
+		"numSamples": 2976,
+		"numSeries": 496,
+		"numChunks": 496
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01FQBEVR2CS8NZ27XTB1NNK7XX"
+		]
+	},
+	"version": 1
+}

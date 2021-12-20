@@ -35,17 +35,6 @@ const httpRequestDurationMicroseconds = new promClient.Histogram({
 // Register the histogram
 register.registerMetric(httpRequestDurationMicroseconds);
 
-console.log('Hello');
-// // Create the count metric:
-// const httpRequestOperationsTotal = new promClient.Counter({
-// 	name: 'node_request_operations_total',
-// 	help: 'The total number of processed requests',
-// 	labelNames: ['method']
-// });
-
-// // Register the the counter
-// register.registerMetric(httpRequestOperationsTotal);
-
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
 	.command('keygen', 'Generate root identity for integration service API', {})

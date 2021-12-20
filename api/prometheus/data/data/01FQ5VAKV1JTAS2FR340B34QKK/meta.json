@@ -1,0 +1,17 @@
+{
+	"ulid": "01FQ5VAKV1JTAS2FR340B34QKK",
+	"minTime": 1639781880760,
+	"maxTime": 1639785600000,
+	"stats": {
+		"numSamples": 992,
+		"numSeries": 496,
+		"numChunks": 496
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01FQ5VAKV1JTAS2FR340B34QKK"
+		]
+	},
+	"version": 1
+}
