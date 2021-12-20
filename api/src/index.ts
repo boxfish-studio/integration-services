@@ -13,14 +13,15 @@ import { serverInfoRouter } from './routers/server-info';
 import yargs from 'yargs';
 import { KeyGenerator } from './setup';
 import { ConfigurationService } from './services/configuration-service';
-
-//prometheus integration:
 import promClient from 'prom-client';
 
+//prometheus integration:
 const register = new promClient.Registry();
 register.setDefaultLabels({
 	app: 'integration-services'
 });
+
+console.log('register ', register);
 
 promClient.collectDefaultMetrics({ register });
 
@@ -34,6 +35,7 @@ const httpRequestDurationMicroseconds = new promClient.Histogram({
 
 // Register the histogram
 register.registerMetric(httpRequestDurationMicroseconds);
+console.log('register with histogram: ', register);
 
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
