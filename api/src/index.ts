@@ -91,15 +91,27 @@ async function startServer() {
 		app.get('/metrics', async function (req, res) {
 			// Start the timer
 			const end = httpRequestDurationMicroseconds.startTimer();
+			const path = req.route.path;
+			// const route = url.parse(req.url).pathname;
 
-			// 	// Return all metrics the Prometheus exposition format
-			res.setHeader('Content-Type', register.contentType);
-			res.end(await register.metrics());
+			try {
+				if (path === '/metrics') {
+					// Return all metrics the Prometheus exposition format
+					res.setHeader('Content-Type', register.contentType);
+					res.status(200).end(register.metrics());
+				}
+			} catch (error) {
+				res.writeHead(500).end();
+			}
+			if (!res) {
+				res.writeHead(404).end();
+			}
+
 			console.log('response status code:', res.statusCode);
 
 			// End timer and add labels
-			end({ path: req.route.path, code: res.statusCode, method: req.method });
-			console.log('register: ', register);
+			end({ path, code: res.statusCode, method: req.method });
+			console.log('path and status code: ', path, res.statusCode);
 		});
 
 		app.use(errorMiddleware);
