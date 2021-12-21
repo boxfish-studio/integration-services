@@ -1,5 +1,0 @@
-# groups:
-#   - name: api
-#     rules:
-#       - record: CPU_Usage
-#         expr: 100 - (irate(process_cpu_seconds_total{job="api"}[5m])) * 100

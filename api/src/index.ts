@@ -95,9 +95,11 @@ async function startServer() {
 			// 	// Return all metrics the Prometheus exposition format
 			res.setHeader('Content-Type', register.contentType);
 			res.end(await register.metrics());
+			console.log('response status code:', res.statusCode);
 
 			// End timer and add labels
 			end({ path: req.route.path, code: res.statusCode, method: req.method });
+			console.log('register: ', register);
 		});
 
 		app.use(errorMiddleware);
