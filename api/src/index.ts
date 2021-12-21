@@ -21,21 +21,18 @@ register.setDefaultLabels({
 	app: 'integration-services'
 });
 
-console.log('register ', register);
-
 promClient.collectDefaultMetrics({ register });
 
 // Create a histogram metric:
 const httpRequestDurationMicroseconds = new promClient.Histogram({
-	name: 'http_request_duration_seconds',
+	name: 'http_request_duration_microseconds',
 	help: 'Duration of HTTP requests in microseconds',
 	labelNames: ['method', 'path', 'code'],
-	buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
+	buckets: [0.1, 5, 15, 50, 100, 200, 300, 400, 500, 1000, 2000]
 });
 
 // Register the histogram
 register.registerMetric(httpRequestDurationMicroseconds);
-console.log('register with histogram: ', register);
 
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
@@ -92,8 +89,6 @@ async function startServer() {
 
 		// Prometheus client integration:
 		app.get('/metrics', async function (req, res) {
-			// const path = req.url;
-			const path = req.route.path;
 			// Start the timer
 			const end = httpRequestDurationMicroseconds.startTimer();
 
@@ -102,7 +97,7 @@ async function startServer() {
 			res.end(await register.metrics());
 
 			// End timer and add labels
-			end({ path, code: res.statusCode, method: req.method });
+			end({ path: req.route.path, code: res.statusCode, method: req.method });
 		});
 
 		app.use(errorMiddleware);
