@@ -70,7 +70,7 @@ services:
     container_name: grafana
     restart: always
     volumes:
-      - ./config.ini:/etc/grafana/config.ini
+      - ./grafana/config.ini:/etc/grafana/config.ini
       - ./dashboards:/var/lib/grafana/dashboards
       - ./grafana/provisioning:/etc/grafana/provisioning
     ports:
