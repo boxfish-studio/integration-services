@@ -637,7 +637,7 @@
 						"uid": "PD3AC70811CEC96A5"
 					},
 					"exemplar": true,
-					"expr": "sum(rate(http_request_duration_microseconds_count{job=\"api\", code=\"404\"}[1m]))",
+					"expr": "sum(rate(http_request_duration_microseconds_count{app=\"integration-services\", code=\"404\"}[1m]))",
 					"interval": "",
 					"legendFormat": "",
 					"refId": "A"
@@ -648,7 +648,7 @@
 						"uid": "PD3AC70811CEC96A5"
 					},
 					"exemplar": true,
-					"expr": "sum(increase(http_request_duration_microseconds_count{job=\"api\", code=\"500\"}[1m]))",
+					"expr": "sum(increase(http_request_duration_microseconds_count{app=\"integration-services\", code=\"404\"}[1m]))",
 					"hide": false,
 					"interval": "",
 					"legendFormat": "",
@@ -667,7 +667,7 @@
 		"list": []
 	},
 	"time": {
-		"from": "now-24h",
+		"from": "now-6h",
 		"to": "now"
 	},
 	"timepicker": {},

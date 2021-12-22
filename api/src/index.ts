@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Response, Request } from 'express';
 import * as dotenv from 'dotenv';
 dotenv.config();
 import swaggerUi from 'swagger-ui-express';
@@ -33,6 +33,21 @@ const httpRequestDurationMicroseconds = new promClient.Histogram({
 
 // Register the histogram
 register.registerMetric(httpRequestDurationMicroseconds);
+
+// middleware for prom-client:
+const latencyMiddleware = (req: Request, res: Response, next: NextFunction) => {
+	const end = httpRequestDurationMicroseconds.startTimer();
+
+	const responseCompleted = async () => {
+		// we do not listen for close since we need to keep the lock until the request to the tangle has been finished.
+		// otherwise the client could close the request before and we would release the lock too early.
+		res.removeListener('finish', responseCompleted);
+		end({ method: req.method, code: res.statusCode, path: req.path });
+	};
+	res.on('finish', responseCompleted);
+
+	next();
+};
 
 const argv = yargs
 	.command('server', 'Start the integration service API', {})
@@ -72,6 +87,7 @@ async function startServer() {
 		const version = config.apiVersion;
 		const openapiSpecification = swaggerJsdoc(openApiDefinition);
 
+		app.use(latencyMiddleware);
 		app.use(express.json({ limit: '10mb' }));
 		app.use(express.urlencoded({ limit: '10mb', extended: true }));
 		app.use(expressWinston.logger(logger.getExpressWinstonOptions()));
@@ -87,28 +103,10 @@ async function startServer() {
 		useRouter(app, prefix + '/verification', verificationRouter);
 		useRouter(app, '', serverInfoRouter);
 
-		// Prometheus client integration:
+		// prom-client metrics:
 		app.get('/metrics', async function (req, res) {
-			// Start the timer
-			const end = httpRequestDurationMicroseconds.startTimer();
-			const path = req.route.path;
-
-			try {
-				if (path === '/metrics') {
-					// Return all metrics the Prometheus exposition format
-					res.setHeader('Content-Type', register.contentType);
-					res.status(200).end(await register.metrics());
-				}
-			} catch (error) {
-				res.writeHead(500).end();
-			}
-			if (!res) {
-				res.writeHead(404).end();
-			}
-
-			// End timer and add labels
-			end({ path, code: res.statusCode, method: req.method });
-			console.log('path and status code: ', path, res.statusCode);
+			res.setHeader('Content-Type', register.contentType);
+			res.status(200).end(await register.metrics());
 		});
 
 		app.use(errorMiddleware);
