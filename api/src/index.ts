@@ -92,13 +92,12 @@ async function startServer() {
 			// Start the timer
 			const end = httpRequestDurationMicroseconds.startTimer();
 			const path = req.route.path;
-			// const route = url.parse(req.url).pathname;
 
 			try {
 				if (path === '/metrics') {
 					// Return all metrics the Prometheus exposition format
 					res.setHeader('Content-Type', register.contentType);
-					res.status(200).end(register.metrics());
+					res.status(200).end(await register.metrics());
 				}
 			} catch (error) {
 				res.writeHead(500).end();
@@ -106,8 +105,6 @@ async function startServer() {
 			if (!res) {
 				res.writeHead(404).end();
 			}
-
-			console.log('response status code:', res.statusCode);
 
 			// End timer and add labels
 			end({ path, code: res.statusCode, method: req.method });
