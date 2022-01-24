@@ -25,7 +25,7 @@ const AuthenticateCredential = () => {
 					<GenerateNonce></GenerateNonce>
 					<label>
 						<div>Signed nonce:</div>
-						<Input type="text" name="signed-nonce" onChange={(event: any) => setSignedNonce(event.target.value)}></Input>
+						<Input id='signedNonce' type="text" name="signed-nonce" onChange={(event: any) => setSignedNonce(event.target.value)}></Input>
 					</label>
 					<SmallButton style={{ marginLeft: 0 }} onClick={onAuthenticate}>
 						Authenticate
