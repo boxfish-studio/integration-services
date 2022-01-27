@@ -1,9 +1,13 @@
-import { ClientConfig } from '../models/clientConfig';
-const crypto = require('crypto');
+// const crypto = require('crypto');
 import * as ed from '@noble/ed25519';
-import * as bs58 from 'bs58';
-import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
+// import * as bs58 from 'bs58';
+import { base58_to_binary } from 'base58-js'
+
+import { ApiVersion } from '../models/apiVersion';
+import { ClientConfig } from '../models/clientConfig';
+
+import bs58 from 'bs-58.js';
 
 /**
  * This is the base client used as a parent class for all clients
@@ -55,11 +59,12 @@ export abstract class BaseClient {
   private async hashNonce(nonce: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
-    return crypto.createHash('sha256').update(data).digest('hex');
+    return "test";
+    // return crypto.createHash('sha256').update(data).digest('hex');
   }
 
   private getHexEncodedKey(base58Key: string) {
-    return bs58.decode(base58Key).toString('hex');
+    return base58_to_binary(base58Key).toString(16);
   }
 
   protected async post(url: string, data: any) {
