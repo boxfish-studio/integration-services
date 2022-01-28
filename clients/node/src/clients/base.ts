@@ -1,7 +1,7 @@
 import { ClientConfig } from '../models/clientConfig';
 const crypto = require('crypto');
+const bs58 = require('../bs58/bs58');
 import * as ed from '@noble/ed25519';
-import * as bs58 from 'bs58';
 import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
 
