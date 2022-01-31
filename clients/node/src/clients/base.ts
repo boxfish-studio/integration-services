@@ -1,9 +1,9 @@
-import { ClientConfig } from '../models/clientConfig';
-const crypto = require('crypto');
-const bs58 = require('./../bs58/bs58');
 import * as ed from '@noble/ed25519';
-import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
+import * as crypto from 'crypto';
+import { ApiVersion } from '../models/apiVersion';
+import { ClientConfig } from '../models/clientConfig';
+const bs58 = require('./../bs58/bs58');
 
 /**
  * This is the base client used as a parent class for all clients
@@ -47,15 +47,9 @@ export abstract class BaseClient {
     if (nonce?.length !== 40) {
       throw new Error('nonce must have a length of 40 characters!');
     }
-    const hash = await this.hashNonce(nonce);
-    const signedHash = await ed.sign(hash, privateKey);
+    const hash = crypto.createHash('sha256').update(nonce).digest().toString('hex');
+    const signedHash =  await ed.sign(hash, privateKey);
     return ed.Signature.fromHex(signedHash).toHex();
-  }
-
-  private async hashNonce(nonce: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(nonce);
-    return crypto.createHash('sha256').update(data).digest('hex');
   }
 
   private getHexEncodedKey(base58Key: string) {
