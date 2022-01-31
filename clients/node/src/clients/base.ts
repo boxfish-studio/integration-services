@@ -1,10 +1,9 @@
-import { ClientConfig } from '../models/clientConfig';
-var SHA256 = require("crypto-js/sha256");
-var formatHex = require("crypto-js/format-hex");
-const bs58 = require('./../bs58/bs58');
 import * as ed from '@noble/ed25519';
-import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
+import { ApiVersion } from '../models/apiVersion';
+import { ClientConfig } from '../models/clientConfig';
+var CryptoJS = require("crypto-js/sha256");
+const bs58 = require('./../bs58/bs58');
 
 /**
  * This is the base client used as a parent class for all clients
@@ -56,7 +55,7 @@ export abstract class BaseClient {
   private async hashNonce(nonce: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
-    return formatHex(SHA256(data));
+    return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
   }
 
   private getHexEncodedKey(base58Key: string) {
