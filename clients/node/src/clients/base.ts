@@ -2,7 +2,7 @@ import * as ed from '@noble/ed25519';
 import axios, { AxiosInstance } from 'axios';
 import { ApiVersion } from '../models/apiVersion';
 import { ClientConfig } from '../models/clientConfig';
-var CryptoJS = require("crypto-js/sha256");
+var CryptoJS = require('crypto-js');
 const bs58 = require('./../bs58/bs58');
 
 /**
