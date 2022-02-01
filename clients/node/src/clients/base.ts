@@ -1,5 +1,4 @@
 import { ClientConfig } from '../models/clientConfig';
-import * as crypto from 'crypto';
 const bs58 = require('./../bs58/bs58');
 import * as ed from '@noble/ed25519';
 import { ApiVersion } from '../models/apiVersion';
@@ -57,9 +56,10 @@ export abstract class BaseClient {
     const data = encoder.encode(nonce);
     console.log("data", data);
 
-    const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
-    console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
-    return hash
+    // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
+    // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
+    return "test";
+
   }
 
   private getHexEncodedKey(base58Key: string) {
