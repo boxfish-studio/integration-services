@@ -55,7 +55,7 @@ export abstract class BaseClient {
   private async hashNonce(nonce: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
-    return crypto.createHash('sha256').update(data).digest('hex');
+    return crypto.createHash('sha256').update(nonce).digest().toString('hex');
   }
 
   private getHexEncodedKey(base58Key: string) {
