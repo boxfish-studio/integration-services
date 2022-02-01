@@ -1,9 +1,9 @@
 import { ClientConfig } from '../models/clientConfig';
 const bs58 = require('./../bs58/bs58');
 import * as ed from '@noble/ed25519';
-import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
 import sha256 from 'crypto-js/sha256';
+import { ApiVersion } from '..';
 /**
  * This is the base client used as a parent class for all clients
  * using the integration services api.
