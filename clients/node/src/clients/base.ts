@@ -55,11 +55,12 @@ export abstract class BaseClient {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
     console.log("data", data);
-    console.log("sha256", sha256);
+    console.log("sha256", sha256(nonce));
+    console.log("sha256 hex", sha256(nonce).toString(CryptoJS.enc.Hex));
 
     // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
     // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
-    return "test";
+    return sha256(nonce).toString(CryptoJS.enc.Hex);
 
   }
 
