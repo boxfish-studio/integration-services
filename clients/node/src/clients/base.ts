@@ -54,10 +54,6 @@ export abstract class BaseClient {
   private async hashNonce(nonce: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
-    console.log("data", data);
-    console.log("sha256", sha256(nonce));
-    console.log("sha256 toString", sha256(nonce).toString());
-
     // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
     // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
     return sha256(nonce).toString();
