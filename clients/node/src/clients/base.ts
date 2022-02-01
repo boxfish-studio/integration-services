@@ -56,12 +56,11 @@ export abstract class BaseClient {
     const data = encoder.encode(nonce);
     console.log("data", data);
     console.log("sha256", sha256(nonce));
-    console.log("sha256 hex", sha256(nonce).toString(CryptoJS.enc.Hex));
+    console.log("sha256 hex", sha256(nonce));
 
     // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
     // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
-    return sha256(nonce).toString(CryptoJS.enc.Hex);
-
+    return sha256(nonce).toString();
   }
 
   private getHexEncodedKey(base58Key: string) {
