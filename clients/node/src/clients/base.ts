@@ -1,10 +1,9 @@
-import * as ed from '@noble/ed25519';
-import axios, { AxiosInstance } from 'axios';
-import * as crypto from 'crypto';
-import { ApiVersion } from '../models/apiVersion';
 import { ClientConfig } from '../models/clientConfig';
 const bs58 = require('./../bs58/bs58');
-
+import { ApiVersion } from '../models/apiVersion';
+import * as ed from '@noble/ed25519';
+import axios, { AxiosInstance } from 'axios';
+import sha256 from 'crypto-js/sha256';
 /**
  * This is the base client used as a parent class for all clients
  * using the integration services api.
@@ -47,9 +46,17 @@ export abstract class BaseClient {
     if (nonce?.length !== 40) {
       throw new Error('nonce must have a length of 40 characters!');
     }
-    const hash = crypto.createHash('sha256').update(nonce).digest().toString('hex');
-    const signedHash =  await ed.sign(hash, privateKey);
+    const hash = await this.hashNonce(nonce);
+    const signedHash = await ed.sign(hash, privateKey);
     return ed.Signature.fromHex(signedHash).toHex();
+  }
+
+  private async hashNonce(nonce: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(nonce);
+    // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
+    // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
+    return sha256(nonce).toString();
   }
 
   private getHexEncodedKey(base58Key: string) {
