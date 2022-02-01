@@ -3,7 +3,7 @@ const bs58 = require('./../bs58/bs58');
 import * as ed from '@noble/ed25519';
 import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
-
+import * as crypto from 'crypto-browserify';
 /**
  * This is the base client used as a parent class for all clients
  * using the integration services api.
@@ -55,6 +55,7 @@ export abstract class BaseClient {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
     console.log("data", data);
+    console.log("crypto-browserify", crypto.createHash);
 
     // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
     // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
