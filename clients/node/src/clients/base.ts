@@ -47,7 +47,7 @@ export abstract class BaseClient {
     if (nonce?.length !== 40) {
       throw new Error('nonce must have a length of 40 characters!');
     }
-    const hash = await this.hashNonce(nonce);
+    const hash = crypto.createHash('sha256').update(nonce).digest().toString('hex');
     const signedHash = await ed.sign(hash, privateKey);
     return ed.Signature.fromHex(signedHash).toHex();
   }
