@@ -1,5 +1,5 @@
 import { ClientConfig } from '../models/clientConfig';
-const crypto = require('crypto');
+import * as crypto from 'crypto';
 const bs58 = require('./../bs58/bs58');
 import * as ed from '@noble/ed25519';
 import { ApiVersion } from '../models/apiVersion';
