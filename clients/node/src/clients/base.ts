@@ -1,9 +1,10 @@
 import { ClientConfig } from '../models/clientConfig';
-const bs58 = require('./../bs58/bs58');
+// const bs58 = require('./../bs58/bs58');
+import { Base58 } from '@iota/util.js';
 import { ApiVersion } from '../models/apiVersion';
 import * as ed from '@noble/ed25519';
 import axios, { AxiosInstance } from 'axios';
-import sha256 from 'crypto-js/sha256';
+import { Sha256 } from '@iota/crypto.js';
 /**
  * This is the base client used as a parent class for all clients
  * using the integration services api.
@@ -56,11 +57,12 @@ export abstract class BaseClient {
     const data = encoder.encode(nonce);
     // const hash = crypto.createHash('sha256').update(data).digest().toString('hex');
     // console.log("crypto.createHash('sha256').update(data).digest().toString('hex')", hash);
-    return sha256(nonce).toString();
+    const hash = new Sha256().update(data).digest().toString();
+    return hash;
   }
 
   private getHexEncodedKey(base58Key: string) {
-    return bs58.decode(base58Key).toString('hex');
+    return Base58.decode(base58Key).toString();
   }
 
   protected async post(url: string, data: any) {

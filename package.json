@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@iota/crypto.js": "^1.8.6"
+  }
+}
