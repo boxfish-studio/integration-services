@@ -1,7 +1,7 @@
 import { ClientConfig } from '../models/clientConfig';
-const crypto = require('crypto');
 import * as ed from '@noble/ed25519';
 import { Base58, Converter } from '@iota/util.js';
+import { Sha256 } from '@iota/crypto.js';
 import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
 
@@ -55,7 +55,10 @@ export abstract class BaseClient {
   private async hashNonce(nonce: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(nonce);
-    return crypto.createHash('sha256').update(data).digest('hex');
+
+    const sha256 = new Sha256(256);
+    const hash = sha256.update(data);
+    return Converter.bytesToHex(hash.digest());
   }
 
   private getHexEncodedKey(base58Key: string) {
