@@ -1,7 +1,7 @@
 import { ClientConfig } from '../models/clientConfig';
 const crypto = require('crypto');
 import * as ed from '@noble/ed25519';
-import * as bs58 from 'bs58';
+import { Base58, Converter } from '@iota/util.js';
 import { ApiVersion } from '../models/apiVersion';
 import axios, { AxiosInstance } from 'axios';
 
@@ -59,7 +59,7 @@ export abstract class BaseClient {
   }
 
   private getHexEncodedKey(base58Key: string) {
-    return bs58.decode(base58Key).toString('hex');
+    return Converter.bytesToHex(Base58.decode(base58Key));
   }
 
   protected async post(url: string, data: any) {
