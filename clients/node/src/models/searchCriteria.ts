@@ -3,5 +3,6 @@ export type searchCriteria = {
     username?: string,
     registrationDate?: Date,
     limit?: number,
-    index?: number
+    index?: number,
+    ascending?: boolean
 }

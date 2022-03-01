@@ -43,12 +43,13 @@ export class IdentityClient extends BaseClient {
     username,
     registrationDate,
     limit,
-    index
+    index,
+    ascending
   }: searchCriteria): Promise<User[]> {
     const param = registrationDate != undefined ? { 'registration-date': registrationDate } : {};
     return await this.get(
       'identities/search',
-      { type, username, ...param, limit, index }
+      { type, username, ...param, limit, index, ascending }
     );
   }
 
