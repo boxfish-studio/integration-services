@@ -13,7 +13,7 @@ export abstract class BaseClient {
   private apiKey: string;
   private baseUrl: string;
   private apiVersion: ApiVersion;
-  private jwtToken?: string;
+  jwtToken?: string;
   private instance: AxiosInstance;
 
   // Default config is a local api without an api key
