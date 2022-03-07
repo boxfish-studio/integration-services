@@ -1,6 +1,6 @@
 {
   "name": "boxfish-studio--iota-is-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "node.js sdk for the IOTA's Integration Services API",
   "types": "lib",
   "scripts": {
@@ -41,6 +41,7 @@
   "exports": {
       ".": "./src/index.ts",
       "./package.json": "./package.json",
-      "./src": "./src"
+      "./models": "./src/models",
+      "./clients": "./src/clients"
   }
 }
