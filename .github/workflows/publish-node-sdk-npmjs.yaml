@@ -1,7 +1,7 @@
 name: Publish Package to npmjs
 on:
   push:
-      branches: [ master ]
+      branches: [ master, feat/browser-compatibility ]
       paths: 
         - "clients/node/**"
         - ".github/workflows/publish-node-sdk-npmjs.yml"
